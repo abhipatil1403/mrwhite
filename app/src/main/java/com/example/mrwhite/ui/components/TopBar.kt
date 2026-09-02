@@ -26,6 +26,9 @@ fun TopBar(
     showGameControls: Boolean = false,
     onRestartGame: (() -> Unit)? = null,
     onExitGame: (() -> Unit)? = null,
+    onHowToPlayClick: (() -> Unit)? = null,
+    onAboutClick: (() -> Unit)? = null,
+    onFeedbackClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var showMenuDialog by remember { mutableStateOf(false) }
@@ -71,7 +74,21 @@ fun TopBar(
     }
 
     if (showMenuDialog) {
-        MenuDialog(onDismiss = { showMenuDialog = false })
+        MenuDialog(
+            onDismiss = { showMenuDialog = false },
+            onHowToPlayClick = {
+                showMenuDialog = false
+                onHowToPlayClick?.invoke()
+            },
+            onAboutClick = {
+                showMenuDialog = false
+                onAboutClick?.invoke()
+            },
+            onFeedbackClick = {
+                showMenuDialog = false
+                onFeedbackClick?.invoke()
+            }
+        )
     }
 
     if (showRestartDialog) {
@@ -138,7 +155,12 @@ fun ConfirmationDialog(
 }
 
 @Composable
-fun MenuDialog(onDismiss: () -> Unit) {
+fun MenuDialog(
+    onDismiss: () -> Unit,
+    onHowToPlayClick: (() -> Unit)? = null,
+    onAboutClick: (() -> Unit)? = null,
+    onFeedbackClick: (() -> Unit)? = null
+) {
     var showCustomWordsDialog by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -151,11 +173,11 @@ fun MenuDialog(onDismiss: () -> Unit) {
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                MenuDialogItem("How to play?") {}
+                MenuDialogItem("How to play?") { onHowToPlayClick?.invoke() ?: onDismiss() }
                 MenuDialogItem("Custom words") { showCustomWordsDialog = true }
-                MenuDialogItem("About the game") {}
-                MenuDialogItem("Share with friends") {}
-                MenuDialogItem("Send feedback") {}
+                MenuDialogItem("About the game") { onAboutClick?.invoke() ?: onDismiss() }
+                MenuDialogItem("Share with friends") { onDismiss() }
+                MenuDialogItem("Send feedback") { onFeedbackClick?.invoke() ?: onDismiss() }
             }
         }
     }

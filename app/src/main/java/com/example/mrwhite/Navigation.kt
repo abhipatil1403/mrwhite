@@ -18,6 +18,10 @@ import com.example.mrwhite.viewmodel.GameViewModel
 import com.example.mrwhite.ui.screens.DiscussionScreen
 import com.example.mrwhite.ui.screens.ResultScreen
 
+import com.example.mrwhite.ui.screens.HowToPlayScreen
+import com.example.mrwhite.ui.screens.AboutScreen
+import com.example.mrwhite.ui.screens.FeedbackScreen
+
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
@@ -31,8 +35,23 @@ fun MainNavigation() {
         composable(Screen.Setup.route) {
             SetupScreen(
                 viewModel = gameViewModel,
-                onNext = { navController.navigate(Screen.Players.route) }
+                onNext = { navController.navigate(Screen.Players.route) },
+                onHowToPlayClick = { navController.navigate(Screen.HowToPlay.route) },
+                onAboutClick = { navController.navigate(Screen.About.route) },
+                onFeedbackClick = { navController.navigate(Screen.Feedback.route) }
             )
+        }
+        
+        composable(Screen.HowToPlay.route) {
+            HowToPlayScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable(Screen.About.route) {
+            AboutScreen(onBack = { navController.popBackStack() })
+        }
+        
+        composable(Screen.Feedback.route) {
+            FeedbackScreen(onBack = { navController.popBackStack() })
         }
         
         composable(Screen.Players.route) {

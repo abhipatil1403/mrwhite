@@ -31,7 +31,10 @@ import com.example.mrwhite.viewmodel.GameViewModel
 @Composable
 fun SetupScreen(
     viewModel: GameViewModel,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    onHowToPlayClick: () -> Unit,
+    onAboutClick: () -> Unit,
+    onFeedbackClick: () -> Unit
 ) {
     val settings by viewModel.settings.collectAsState()
 
@@ -40,7 +43,12 @@ fun SetupScreen(
             .fillMaxSize()
             .background(WhiteBackground)
     ) {
-        TopBar(title = "Setup")
+        TopBar(
+            title = "Setup",
+            onHowToPlayClick = onHowToPlayClick,
+            onAboutClick = onAboutClick,
+            onFeedbackClick = onFeedbackClick
+        )
 
         Column(
             modifier = Modifier

@@ -6,4 +6,7 @@ sealed class Screen(val route: String) {
     object RoleReveal : Screen("role_reveal")
     object Discussion : Screen("discussion")
     object Result : Screen("result")
+    object HowToPlay : Screen("how_to_play")
+    object About : Screen("about")
+    object Feedback : Screen("feedback")
 }
