@@ -14,38 +14,36 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _settings = MutableStateFlow(GameSettings())
     val settings: StateFlow<GameSettings> = _settings.asStateFlow()
 
-    private val _players = MutableStateFlow(List(4) { index -> Player(name = "Player ${index + 1}") })
-    val players: StateFlow<List<Player>> = _players.asStateFlow()
+    private val playerRepository = com.example.mrwhite.data.repository.PlayerRepository(application)
+    
+    private val _savedPlayers = MutableStateFlow(playerRepository.getSavedPlayers())
+    val savedPlayers: StateFlow<List<Player>> = _savedPlayers.asStateFlow()
 
-    fun updateTotalPlayers(count: Int) {
-        if (count in 3..20) {
-            _settings.update { it.copy(totalPlayers = count) }
-            adjustPlayersList(count)
+    fun addPlayer(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        
+        // Case-insensitive duplicate check
+        if (_savedPlayers.value.any { it.name.equals(trimmed, ignoreCase = true) }) {
+            // Already exists, could set an error state here, but for simplicity just return
+            return
         }
+        
+        val newPlayer = Player(name = trimmed)
+        _savedPlayers.value = playerRepository.addPlayer(newPlayer)
+        
+        // Auto-select the new player
+        togglePlayerSelection(newPlayer.id)
     }
 
-    private fun adjustPlayersList(newCount: Int) {
-        _players.update { currentList ->
-            when {
-                newCount > currentList.size -> {
-                    val additionalPlayers = List(newCount - currentList.size) { index ->
-                        Player(name = "Player ${currentList.size + index + 1}")
-                    }
-                    currentList + additionalPlayers
-                }
-                newCount < currentList.size -> {
-                    currentList.take(newCount)
-                }
-                else -> currentList
+    fun togglePlayerSelection(playerId: String) {
+        _settings.update { current ->
+            val newIds = if (current.selectedPlayerIds.contains(playerId)) {
+                current.selectedPlayerIds - playerId
+            } else {
+                current.selectedPlayerIds + playerId
             }
-        }
-    }
-
-    fun updatePlayerName(playerId: String, newName: String) {
-        _players.update { currentList ->
-            currentList.map {
-                if (it.id == playerId) it.copy(name = newName) else it
-            }
+            current.copy(selectedPlayerIds = newIds)
         }
     }
 
@@ -70,7 +68,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun startGame() {
         if (settings.value.isValid) {
-            _gameState.value = gameEngine.createGame(settings.value, players.value)
+            val selectedPlayers = savedPlayers.value.filter { settings.value.selectedPlayerIds.contains(it.id) }
+            _gameState.value = gameEngine.createGame(settings.value, selectedPlayers)
         }
     }
 
@@ -111,7 +110,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun restartGame() {
         if (settings.value.isValid) {
-            _gameState.value = gameEngine.createGame(settings.value, players.value)
+            val selectedPlayers = savedPlayers.value.filter { settings.value.selectedPlayerIds.contains(it.id) }
+            _gameState.value = gameEngine.createGame(settings.value, selectedPlayers)
         }
     }
 

@@ -15,9 +15,11 @@ class GameEngine(private val wordRepository: WordRepository) {
         repeat(settings.mrWhiteCount) { roles.add(Role.MR_WHITE) }
         repeat(settings.totalPlayers - settings.undercoverCount - settings.mrWhiteCount) { roles.add(Role.NORMAL) }
 
+        // Shuffle both roles and players independently
         roles.shuffle()
+        val shuffledPlayers = players.shuffled()
 
-        val assignments = players.mapIndexed { index, player ->
+        val assignments = shuffledPlayers.mapIndexed { index, player ->
             val role = roles[index]
             val word = when (role) {
                 Role.NORMAL -> normalWord
@@ -27,7 +29,7 @@ class GameEngine(private val wordRepository: WordRepository) {
             PlayerAssignment(player, role, word)
         }
 
-        val discussionOrder = players.map { it.id }.shuffled()
+        val discussionOrder = shuffledPlayers.map { it.id }.shuffled()
 
         return GameState(
             assignments = assignments,

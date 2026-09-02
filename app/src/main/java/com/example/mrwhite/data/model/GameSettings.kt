@@ -1,11 +1,14 @@
 package com.example.mrwhite.data.model
 
 data class GameSettings(
-    val totalPlayers: Int = 4,
+    val selectedPlayerIds: Set<String> = emptySet(),
     val undercoverCount: Int = 1,
     val mrWhiteCount: Int = 0,
     val category: WordCategory = WordCategory.ANY
 ) {
+    val totalPlayers: Int
+        get() = selectedPlayerIds.size
+
     val isValid: Boolean
         get() = totalPlayers >= 3 &&
                 (undercoverCount + mrWhiteCount > 0) &&

@@ -11,8 +11,9 @@ A classic social deduction game where players try to find out who among them are
 - [x] Android project setup
 - [x] Setup screen
 - [x] Player management
-- [x] Role assignment
-- [x] Role reveal
+- [x] Basic game engine & roles
+- [x] Persistent player roster & selection
+- [x] Pass-the-phone role reveal
 - [x] Clue round
 - [x] Voting
 - [x] Results

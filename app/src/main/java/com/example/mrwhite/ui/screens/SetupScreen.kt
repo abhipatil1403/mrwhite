@@ -11,6 +11,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -49,12 +51,74 @@ fun SetupScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            NumberControl(
-                label = "Total players",
-                value = settings.totalPlayers,
-                onDecrease = { viewModel.updateTotalPlayers(settings.totalPlayers - 1) },
-                onIncrease = { viewModel.updateTotalPlayers(settings.totalPlayers + 1) }
-            )
+            // Players Section
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+                Text(
+                    text = "Players (${settings.totalPlayers})",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = BlackText,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                val playersList by viewModel.savedPlayers.collectAsState()
+
+                if (playersList.isEmpty()) {
+                    Text("No players added yet.", color = BlackText.copy(alpha = 0.6f), modifier = Modifier.padding(bottom = 8.dp))
+                } else {
+                    playersList.forEach { player ->
+                        val isSelected = settings.selectedPlayerIds.contains(player.id)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.togglePlayerSelection(player.id) }
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = if (isSelected) "☑" else "☐",
+                                fontSize = 24.sp,
+                                color = BlackText,
+                                modifier = Modifier.padding(end = 12.dp)
+                            )
+                            Text(
+                                text = player.name,
+                                fontSize = 18.sp,
+                                color = BlackText
+                            )
+                        }
+                    }
+                }
+
+                // Quick Add
+                var newPlayerName by remember { mutableStateOf("") }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                ) {
+                    androidx.compose.material3.OutlinedTextField(
+                        value = newPlayerName,
+                        onValueChange = { newPlayerName = it },
+                        placeholder = { Text("Enter player name") },
+                        modifier = Modifier.weight(1f).padding(end = 8.dp),
+                        singleLine = true,
+                        colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = BlackText,
+                            unfocusedBorderColor = BlackText.copy(alpha = 0.3f)
+                        )
+                    )
+                    OutlinedButton(
+                        onClick = {
+                            viewModel.addPlayer(newPlayerName)
+                            newPlayerName = ""
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = BlackText),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                    ) {
+                        Text("+ Add")
+                    }
+                }
+            }
 
             NumberControl(
                 label = "Undercovers",
