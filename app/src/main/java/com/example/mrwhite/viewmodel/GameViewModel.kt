@@ -1,14 +1,16 @@
 package com.example.mrwhite.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.example.mrwhite.data.model.GameSettings
 import com.example.mrwhite.data.model.Player
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import com.example.mrwhite.data.repository.WordRepository
 
-class GameViewModel : ViewModel() {
+class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _settings = MutableStateFlow(GameSettings())
     val settings: StateFlow<GameSettings> = _settings.asStateFlow()
 
@@ -54,12 +56,15 @@ class GameViewModel : ViewModel() {
     }
 
     fun updateMrWhiteCount(count: Int) {
-        if (count >= 0) {
-            _settings.update { it.copy(mrWhiteCount = count) }
-        }
+        _settings.value = _settings.value.copy(mrWhiteCount = count)
     }
 
-    private val gameEngine = com.example.mrwhite.domain.game.GameEngine()
+    fun updateCategory(category: com.example.mrwhite.data.model.WordCategory) {
+        _settings.value = _settings.value.copy(category = category)
+    }
+
+    private val wordRepository = WordRepository(application)
+    private val gameEngine = com.example.mrwhite.domain.game.GameEngine(wordRepository)
     private val _gameState = MutableStateFlow<com.example.mrwhite.data.model.GameState?>(null)
     val gameState: StateFlow<com.example.mrwhite.data.model.GameState?> = _gameState.asStateFlow()
 

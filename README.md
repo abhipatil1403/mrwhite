@@ -16,9 +16,9 @@ A classic social deduction game where players try to find out who among them are
 - [x] Clue round
 - [x] Voting
 - [x] Results
-- [ ] Word database
-- [ ] Word repetition prevention
-- [ ] Game history
+- [x] Word database
+- [x] Word repetition prevention
+- [x] Game history
 - [ ] Online multiplayer
 
 ## Tech Stack

@@ -3,7 +3,8 @@ package com.example.mrwhite.data.model
 data class GameSettings(
     val totalPlayers: Int = 4,
     val undercoverCount: Int = 1,
-    val mrWhiteCount: Int = 0
+    val mrWhiteCount: Int = 0,
+    val category: WordCategory = WordCategory.ANY
 ) {
     val isValid: Boolean
         get() = totalPlayers >= 3 &&

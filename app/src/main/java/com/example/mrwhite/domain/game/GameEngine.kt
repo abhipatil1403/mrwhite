@@ -3,12 +3,12 @@ package com.example.mrwhite.domain.game
 import com.example.mrwhite.data.model.*
 import com.example.mrwhite.data.repository.WordRepository
 
-class GameEngine(private val wordRepository: WordRepository = WordRepository()) {
+class GameEngine(private val wordRepository: WordRepository) {
 
     fun createGame(settings: GameSettings, players: List<Player>): GameState {
-        val wordPair = wordRepository.getRandomWordPair()
-        val normalWord = wordPair.first
-        val undercoverWord = wordPair.second
+        val wordPair = wordRepository.getRandomWordPair(settings.category)
+        val normalWord = wordPair.civilianWord
+        val undercoverWord = wordPair.undercoverWord
 
         val roles = mutableListOf<Role>()
         repeat(settings.undercoverCount) { roles.add(Role.UNDERCOVER) }
