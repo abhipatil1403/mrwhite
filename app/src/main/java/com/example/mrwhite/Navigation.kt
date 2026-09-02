@@ -15,6 +15,9 @@ import com.example.mrwhite.ui.screens.RoleRevealScreen
 import com.example.mrwhite.ui.screens.SetupScreen
 import com.example.mrwhite.viewmodel.GameViewModel
 
+import com.example.mrwhite.ui.screens.DiscussionScreen
+import com.example.mrwhite.ui.screens.ResultScreen
+
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
@@ -47,8 +50,29 @@ fun MainNavigation() {
             RoleRevealScreen(
                 viewModel = gameViewModel,
                 onGamePhaseStart = {
-                    // Navigate to Game phase later
+                    navController.navigate(Screen.Discussion.route)
                 },
+                onExit = {
+                    navController.popBackStack(Screen.Setup.route, inclusive = false)
+                }
+            )
+        }
+        
+        composable(Screen.Discussion.route) {
+            DiscussionScreen(
+                viewModel = gameViewModel,
+                onExit = {
+                    navController.popBackStack(Screen.Setup.route, inclusive = false)
+                },
+                onResult = {
+                    navController.navigate(Screen.Result.route)
+                }
+            )
+        }
+        
+        composable(Screen.Result.route) {
+            ResultScreen(
+                viewModel = gameViewModel,
                 onExit = {
                     navController.popBackStack(Screen.Setup.route, inclusive = false)
                 }

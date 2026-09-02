@@ -13,9 +13,9 @@ A classic social deduction game where players try to find out who among them are
 - [x] Player management
 - [x] Role assignment
 - [x] Role reveal
-- [ ] Clue round
-- [ ] Voting
-- [ ] Results
+- [x] Clue round
+- [x] Voting
+- [x] Results
 - [ ] Word database
 - [ ] Word repetition prevention
 - [ ] Game history

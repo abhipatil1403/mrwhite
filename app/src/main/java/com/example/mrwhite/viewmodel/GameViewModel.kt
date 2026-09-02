@@ -79,7 +79,28 @@ class GameViewModel : ViewModel() {
 
     fun proceedToDiscussion() {
         _gameState.update { state ->
-            state?.copy(currentPhase = com.example.mrwhite.data.model.GamePhase.GAME)
+            state?.copy(currentPhase = com.example.mrwhite.data.model.GamePhase.DISCUSSION)
+        }
+    }
+
+    fun proceedToElimination() {
+        _gameState.update { state ->
+            state?.copy(currentPhase = com.example.mrwhite.data.model.GamePhase.ELIMINATION)
+        }
+    }
+
+    fun markClueCompleted(playerId: String) {
+        _gameState.update { state ->
+            if (state == null) return@update null
+            state.copy(clueCompletedPlayers = state.clueCompletedPlayers + playerId)
+        }
+    }
+
+    fun eliminatePlayer(playerId: String) {
+        _gameState.update { state ->
+            if (state == null) return@update null
+            val updatedState = state.copy(eliminatedPlayers = state.eliminatedPlayers + playerId)
+            gameEngine.evaluateGameState(updatedState)
         }
     }
 

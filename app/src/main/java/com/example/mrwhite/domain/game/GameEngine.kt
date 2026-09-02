@@ -27,6 +27,38 @@ class GameEngine(private val wordRepository: WordRepository = WordRepository()) 
             PlayerAssignment(player, role, word)
         }
 
-        return GameState(assignments = assignments)
+        val discussionOrder = players.map { it.id }.shuffled()
+
+        return GameState(
+            assignments = assignments,
+            civilianWord = normalWord,
+            undercoverWord = undercoverWord,
+            discussionOrder = discussionOrder
+        )
+    }
+
+    fun evaluateGameState(state: GameState): GameState {
+        val activeAssignments = state.assignments.filter { !state.eliminatedPlayers.contains(it.player.id) }
+        
+        val impostorsRemaining = activeAssignments.count { it.role == Role.UNDERCOVER || it.role == Role.MR_WHITE }
+        val civiliansRemaining = activeAssignments.count { it.role == Role.NORMAL }
+
+        return when {
+            impostorsRemaining == 0 -> {
+                // Civilians win
+                state.copy(winner = "Civilians", currentPhase = GamePhase.RESULT)
+            }
+            civiliansRemaining <= impostorsRemaining -> {
+                // Impostors win
+                state.copy(winner = "Impostors", currentPhase = GamePhase.RESULT)
+            }
+            else -> {
+                // Game continues, start next discussion round
+                state.copy(
+                    currentPhase = GamePhase.DISCUSSION,
+                    clueCompletedPlayers = emptySet()
+                )
+            }
+        }
     }
 }
