@@ -9,10 +9,10 @@ A classic social deduction game where players try to find out who among them are
 ## Features
 
 - [x] Android project setup
-- [ ] Setup screen
-- [ ] Player management
-- [ ] Role assignment
-- [ ] Role reveal
+- [x] Setup screen
+- [x] Player management
+- [x] Role assignment
+- [x] Role reveal
 - [ ] Clue round
 - [ ] Voting
 - [ ] Results
