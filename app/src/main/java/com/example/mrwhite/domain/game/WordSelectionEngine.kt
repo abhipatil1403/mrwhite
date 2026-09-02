@@ -13,12 +13,22 @@ class WordSelectionEngine(
         const val HARD_COOLDOWN_ROUNDS = 30
     }
 
-    fun selectWordPair(category: WordCategory): WordPairData {
-        // Step 1: Filter by category
-        val candidatePool = if (category == WordCategory.ANY) {
+    fun selectWordPair(
+        category: WordCategory,
+        difficulty: com.example.mrwhite.data.model.Difficulty? = null
+    ): WordPairData {
+        // Step 1: Filter by category and difficulty
+        val basePool = if (category == WordCategory.ANY) {
             allPairs
         } else {
             allPairs.filter { it.category == category }
+        }
+        
+        val candidatePool = if (difficulty != null) {
+            val difficultyPool = basePool.filter { it.difficulty == difficulty }
+            if (difficultyPool.isEmpty()) basePool else difficultyPool // Fallback if no words match difficulty
+        } else {
+            basePool
         }
 
         if (candidatePool.isEmpty()) {

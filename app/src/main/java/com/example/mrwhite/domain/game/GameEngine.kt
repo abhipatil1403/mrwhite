@@ -6,7 +6,7 @@ import com.example.mrwhite.data.repository.WordRepository
 class GameEngine(private val wordRepository: WordRepository) {
 
     fun createGame(settings: GameSettings, players: List<Player>): GameState {
-        val wordPair = wordRepository.getRandomWordPair(settings.category)
+        val wordPair = wordRepository.getRandomWordPair(settings.category, settings.difficulty)
         val normalWord = wordPair.civilianWord
         val undercoverWord = wordPair.undercoverWord
 

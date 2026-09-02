@@ -4,7 +4,8 @@ data class GameSettings(
     val selectedPlayerIds: Set<String> = emptySet(),
     val undercoverCount: Int = 1,
     val mrWhiteCount: Int = 0,
-    val category: WordCategory = WordCategory.ANY
+    val category: WordCategory = WordCategory.ANY,
+    val difficulty: com.example.mrwhite.data.model.Difficulty? = null
 ) {
     val totalPlayers: Int
         get() = selectedPlayerIds.size

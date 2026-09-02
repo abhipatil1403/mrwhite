@@ -9,7 +9,10 @@ class WordRepository(context: Context) {
     private val history = WordUsageHistory(context)
     private val engine = WordSelectionEngine(history, WordDatabase.allPairs)
 
-    fun getRandomWordPair(category: WordCategory): WordPairData {
-        return engine.selectWordPair(category)
+    fun getRandomWordPair(
+        category: WordCategory,
+        difficulty: com.example.mrwhite.data.model.Difficulty? = null
+    ): WordPairData {
+        return engine.selectWordPair(category, difficulty)
     }
 }

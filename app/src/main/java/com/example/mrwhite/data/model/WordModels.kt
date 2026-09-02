@@ -28,11 +28,18 @@ enum class WordCategory(val displayName: String) {
     MIXED("Mixed")
 }
 
+enum class Difficulty {
+    EASY,
+    MEDIUM,
+    HARD
+}
+
 data class WordPairData(
     val category: WordCategory,
     val civilianWord: String,
     val undercoverWord: String,
-    val tags: Set<String> = emptySet()
+    val tags: Set<String> = emptySet(),
+    val difficulty: Difficulty = Difficulty.MEDIUM
 ) {
     val pairKey: String
         get() = "${civilianWord.lowercase()}|${undercoverWord.lowercase()}"

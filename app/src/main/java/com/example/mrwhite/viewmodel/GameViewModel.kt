@@ -47,6 +47,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun toggleSelectAllPlayers() {
+        _settings.update { current ->
+            val allIds = _savedPlayers.value.map { it.id }.toSet()
+            if (current.selectedPlayerIds.size == allIds.size && allIds.isNotEmpty()) {
+                current.copy(selectedPlayerIds = emptySet())
+            } else {
+                current.copy(selectedPlayerIds = allIds)
+            }
+        }
+    }
+
     fun updateUndercoverCount(count: Int) {
         if (count >= 0) {
             _settings.update { it.copy(undercoverCount = count) }
@@ -55,6 +66,25 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateMrWhiteCount(count: Int) {
         _settings.value = _settings.value.copy(mrWhiteCount = count)
+    }
+
+    private val groupRepository = com.example.mrwhite.data.repository.GroupRepository(application)
+    private val _savedGroups = MutableStateFlow(groupRepository.getSavedGroups())
+    val savedGroups: StateFlow<List<com.example.mrwhite.data.model.SavedGroup>> = _savedGroups.asStateFlow()
+
+    fun createGroup(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty() || settings.value.selectedPlayerIds.isEmpty()) return
+        
+        _savedGroups.value = groupRepository.createGroup(trimmed, settings.value.selectedPlayerIds)
+    }
+
+    fun loadGroup(group: com.example.mrwhite.data.model.SavedGroup) {
+        _settings.update { it.copy(selectedPlayerIds = group.playerIds) }
+    }
+
+    fun deleteGroup(groupId: String) {
+        _savedGroups.value = groupRepository.deleteGroup(groupId)
     }
 
     fun updateCategory(category: com.example.mrwhite.data.model.WordCategory) {

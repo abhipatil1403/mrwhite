@@ -8,11 +8,9 @@ A classic social deduction game where players try to find out who among them are
 
 ## Features
 
-- [x] Android project setup
-- [x] Setup screen
-- [x] Player management
 - [x] Basic game engine & roles
-- [x] Persistent player roster & selection
+- [x] Persistent player roster & Saved Groups
+- [x] Advanced Word Intelligence (Difficulty, Cooldowns, Categories)
 - [x] Pass-the-phone role reveal
 - [x] Clue round
 - [x] Voting

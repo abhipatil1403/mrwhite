@@ -51,17 +51,59 @@ fun SetupScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Saved Groups Section
+            val groupsList by viewModel.savedGroups.collectAsState()
+            if (groupsList.isNotEmpty()) {
+                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+                    Text(
+                        text = "Saved Groups",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = BlackText,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    androidx.compose.foundation.lazy.LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(groupsList.size) { index ->
+                            val group = groupsList[index]
+                            OutlinedButton(
+                                onClick = { viewModel.loadGroup(group) },
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = BlackText),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                            ) {
+                                Text(group.name)
+                            }
+                        }
+                    }
+                }
+            }
+
             // Players Section
             Column(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-                Text(
-                    text = "Players (${settings.totalPlayers})",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = BlackText,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
                 val playersList by viewModel.savedPlayers.collectAsState()
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Players (${settings.totalPlayers})",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = BlackText
+                    )
+                    if (playersList.isNotEmpty()) {
+                        val allSelected = settings.selectedPlayerIds.size == playersList.size && playersList.isNotEmpty()
+                        Text(
+                            text = if (allSelected) "Deselect all" else "Select all",
+                            fontSize = 14.sp,
+                            color = BlackText.copy(alpha = 0.6f),
+                            modifier = Modifier.clickable { viewModel.toggleSelectAllPlayers() }.padding(4.dp)
+                        )
+                    }
+                }
 
                 if (playersList.isEmpty()) {
                     Text("No players added yet.", color = BlackText.copy(alpha = 0.6f), modifier = Modifier.padding(bottom = 8.dp))
@@ -116,6 +158,37 @@ fun SetupScreen(
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                     ) {
                         Text("+ Add")
+                    }
+                }
+
+                // Save Group
+                if (settings.selectedPlayerIds.isNotEmpty()) {
+                    var newGroupName by remember { mutableStateOf("") }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth().padding(top = 24.dp)
+                    ) {
+                        androidx.compose.material3.OutlinedTextField(
+                            value = newGroupName,
+                            onValueChange = { newGroupName = it },
+                            placeholder = { Text("Group name") },
+                            modifier = Modifier.weight(1f).padding(end = 8.dp),
+                            singleLine = true,
+                            colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = BlackText,
+                                unfocusedBorderColor = BlackText.copy(alpha = 0.3f)
+                            )
+                        )
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.createGroup(newGroupName)
+                                newGroupName = ""
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = BlackText),
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Save Group")
+                        }
                     }
                 }
             }
