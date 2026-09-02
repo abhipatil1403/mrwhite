@@ -69,14 +69,27 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    fun nextPlayerReveal() {
+    fun markPlayerRevealed(playerId: String) {
         _gameState.update { state ->
             if (state == null) return@update null
-            if (state.currentPlayerIndex < state.assignments.size - 1) {
-                state.copy(currentPlayerIndex = state.currentPlayerIndex + 1)
-            } else {
-                state.copy(currentPhase = com.example.mrwhite.data.model.GamePhase.GAME)
-            }
+            val updatedRevealed = state.revealedPlayers + playerId
+            state.copy(revealedPlayers = updatedRevealed)
         }
+    }
+
+    fun proceedToDiscussion() {
+        _gameState.update { state ->
+            state?.copy(currentPhase = com.example.mrwhite.data.model.GamePhase.GAME)
+        }
+    }
+
+    fun restartGame() {
+        if (settings.value.isValid) {
+            _gameState.value = gameEngine.createGame(settings.value, players.value)
+        }
+    }
+
+    fun exitGame() {
+        _gameState.value = null
     }
 }

@@ -48,6 +48,9 @@ fun MainNavigation() {
                 viewModel = gameViewModel,
                 onGamePhaseStart = {
                     // Navigate to Game phase later
+                },
+                onExit = {
+                    navController.popBackStack(Screen.Setup.route, inclusive = false)
                 }
             )
         }

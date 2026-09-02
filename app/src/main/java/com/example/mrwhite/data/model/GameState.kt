@@ -8,7 +8,7 @@ data class PlayerAssignment(
 
 data class GameState(
     val assignments: List<PlayerAssignment> = emptyList(),
-    val currentPlayerIndex: Int = 0,
+    val revealedPlayers: Set<String> = emptySet(),
     val currentPhase: GamePhase = GamePhase.ROLE_REVEAL
 )
 

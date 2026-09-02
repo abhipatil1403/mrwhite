@@ -1,12 +1,13 @@
 package com.example.mrwhite.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,9 +23,14 @@ import com.example.mrwhite.theme.WhiteBackground
 fun TopBar(
     title: String,
     onBackClick: (() -> Unit)? = null,
+    showGameControls: Boolean = false,
+    onRestartGame: (() -> Unit)? = null,
+    onExitGame: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var showMenuDialog by remember { mutableStateOf(false) }
+    var showRestartDialog by remember { mutableStateOf(false) }
+    var showExitDialog by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier
@@ -33,19 +39,30 @@ fun TopBar(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (onBackClick != null) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = BlackText)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (showGameControls) {
+                IconButton(onClick = { showRestartDialog = true }) {
+                    Icon(Icons.Filled.Refresh, contentDescription = "Restart", tint = BlackText)
+                }
+                IconButton(onClick = { showExitDialog = true }) {
+                    Icon(Icons.Filled.Close, contentDescription = "Exit", tint = BlackText)
+                }
+            } else if (onBackClick != null) {
+                IconButton(onClick = onBackClick) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = BlackText)
+                }
+            } else {
+                Spacer(modifier = Modifier.size(48.dp))
             }
-        } else {
-            Spacer(modifier = Modifier.size(48.dp))
         }
 
         Text(
             text = title,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = BlackText
+            color = BlackText,
+            modifier = Modifier.weight(1f),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
         IconButton(onClick = { showMenuDialog = true }) {
@@ -56,10 +73,74 @@ fun TopBar(
     if (showMenuDialog) {
         MenuDialog(onDismiss = { showMenuDialog = false })
     }
+
+    if (showRestartDialog) {
+        ConfirmationDialog(
+            text = "Are you sure you want to\nrestart the game?",
+            onConfirm = {
+                showRestartDialog = false
+                onRestartGame?.invoke()
+            },
+            onDismiss = { showRestartDialog = false }
+        )
+    }
+
+    if (showExitDialog) {
+        ConfirmationDialog(
+            text = "Are you sure you want to exit\nthe game?",
+            onConfirm = {
+                showExitDialog = false
+                onExitGame?.invoke()
+            },
+            onDismiss = { showExitDialog = false }
+        )
+    }
+}
+
+@Composable
+fun ConfirmationDialog(
+    text: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = WhiteBackground,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = text,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = BlackText,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("No", color = BlackText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                    TextButton(onClick = onConfirm) {
+                        Text("Yes", color = BlackText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun MenuDialog(onDismiss: () -> Unit) {
+    var showCustomWordsDialog by remember { mutableStateOf(false) }
+
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -71,9 +152,55 @@ fun MenuDialog(onDismiss: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 MenuDialogItem("How to play?") {}
+                MenuDialogItem("Custom words") { showCustomWordsDialog = true }
                 MenuDialogItem("About the game") {}
                 MenuDialogItem("Share with friends") {}
                 MenuDialogItem("Send feedback") {}
+            }
+        }
+    }
+
+    if (showCustomWordsDialog) {
+        CustomWordsDialog(onDismiss = { showCustomWordsDialog = false })
+    }
+}
+
+@Composable
+fun CustomWordsDialog(onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = WhiteBackground,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Custom words",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = BlackText
+                )
+                
+                // Placeholder for Custom Words input
+                Text(
+                    text = "Custom words functionality will be implemented soon.",
+                    color = BlackText
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel", color = BlackText)
+                    }
+                    TextButton(onClick = onDismiss, enabled = false) {
+                        Text("Start", color = BlackText)
+                    }
+                }
             }
         }
     }
