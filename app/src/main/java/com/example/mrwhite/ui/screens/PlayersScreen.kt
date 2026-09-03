@@ -127,8 +127,7 @@ fun PlayersScreen(
                     items(selectedPlayers, key = { it.id }) { player ->
                         Surface(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .border(0.dp, GreyOutline),
+                                .fillMaxWidth(),
                             shape = RoundedCornerShape(18.dp),
                             color = WhiteBackground,
                             shadowElevation = 4.dp,

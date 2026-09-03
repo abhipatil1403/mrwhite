@@ -189,7 +189,7 @@ fun SecretRevealDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
@@ -197,7 +197,8 @@ fun SecretRevealDialog(
                     text = assignment.player.name,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = BlackText
+                    color = BlackText,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
                 Text(
@@ -207,12 +208,13 @@ fun SecretRevealDialog(
                         Role.MR_WHITE -> "You are -"
                     },
                     fontSize = 18.sp,
-                    color = BlackText
+                    color = BlackText,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
                 Surface(
                     color = NavyPrimary,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = androidx.compose.ui.graphics.RectangleShape,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
@@ -225,13 +227,14 @@ fun SecretRevealDialog(
                         fontWeight = FontWeight.ExtraBold,
                         color = androidx.compose.ui.graphics.Color.White,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
                     )
                 }
 
                 PrimaryButton(
                     text = "OK",
-                    onClick = onDismiss
+                    onClick = onDismiss,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
             }
         }
