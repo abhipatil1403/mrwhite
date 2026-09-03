@@ -31,4 +31,11 @@ class PlayerRepository(context: Context) {
         savePlayers(current)
         return current
     }
+
+    fun deletePlayer(playerId: String): List<Player> {
+        val current = getSavedPlayers().toMutableList()
+        current.removeAll { it.id == playerId }
+        savePlayers(current)
+        return current
+    }
 }

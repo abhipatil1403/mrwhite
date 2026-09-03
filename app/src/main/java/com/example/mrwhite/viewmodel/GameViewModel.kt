@@ -41,6 +41,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         clearGameStartError()
     }
 
+    fun deletePlayer(playerId: String) {
+        _savedPlayers.value = playerRepository.deletePlayer(playerId)
+        _settings.update { current ->
+            sanitizeSettings(current.copy(selectedPlayerIds = current.selectedPlayerIds - playerId))
+        }
+        clearGameStartError()
+    }
+
     fun togglePlayerSelection(playerId: String) {
         _settings.update { current ->
             val newIds = if (current.selectedPlayerIds.contains(playerId)) {

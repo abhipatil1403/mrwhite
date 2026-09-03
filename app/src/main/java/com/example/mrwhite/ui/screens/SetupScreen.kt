@@ -26,7 +26,11 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -66,6 +70,7 @@ fun SetupScreen(
     val settings by viewModel.settings.collectAsState()
     val playersList by viewModel.savedPlayers.collectAsState()
     val groupsList by viewModel.savedGroups.collectAsState()
+    var playerToDelete by remember { mutableStateOf<Player?>(null) }
 
     Column(
         modifier = Modifier
@@ -153,7 +158,8 @@ fun SetupScreen(
                             PlayerSelectionRow(
                                 player = player,
                                 selected = player.id in settings.selectedPlayerIds,
-                                onToggle = { viewModel.togglePlayerSelection(player.id) }
+                                onToggle = { viewModel.togglePlayerSelection(player.id) },
+                                onDelete = { playerToDelete = player }
                             )
                         }
                     }
@@ -303,6 +309,17 @@ fun SetupScreen(
             )
         }
     }
+
+    playerToDelete?.let { player ->
+        com.example.mrwhite.ui.components.ConfirmationDialog(
+            text = "Are you sure you want to delete ${player.name}?",
+            onConfirm = {
+                viewModel.deletePlayer(player.id)
+                playerToDelete = null
+            },
+            onDismiss = { playerToDelete = null }
+        )
+    }
 }
 
 @Composable
@@ -341,12 +358,12 @@ private fun SetupSummaryCard(
 private fun PlayerSelectionRow(
     player: Player,
     selected: Boolean,
-    onToggle: () -> Unit
+    onToggle: () -> Unit,
+    onDelete: () -> Unit
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onToggle),
+        onClick = onToggle,
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         color = if (selected) NavyPrimary.copy(alpha = 0.08f) else WhiteBackground,
         tonalElevation = if (selected) 2.dp else 0.dp,
@@ -368,11 +385,24 @@ private fun PlayerSelectionRow(
                 fontWeight = FontWeight.Medium,
                 color = BlackText
             )
-            Text(
-                text = if (selected) "Selected" else "Tap to add",
-                fontSize = 13.sp,
-                color = if (selected) NavyPrimary else BlackText.copy(alpha = 0.55f)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = if (selected) "Selected" else "Tap to add",
+                    fontSize = 13.sp,
+                    color = if (selected) NavyPrimary else BlackText.copy(alpha = 0.55f)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.height(24.dp).width(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Delete Player",
+                        tint = ErrorRed
+                    )
+                }
+            }
         }
     }
 }
