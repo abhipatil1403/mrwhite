@@ -204,7 +204,7 @@ fun SecretRevealDialog(
                 Text(
                     text = when (assignment.role) {
                         Role.NORMAL -> "Your word is -"
-                        Role.UNDERCOVER -> "You are -"
+                        Role.UNDERCOVER -> "Your word is -"
                         Role.MR_WHITE -> "You are -"
                     },
                     fontSize = 18.sp,
@@ -220,7 +220,7 @@ fun SecretRevealDialog(
                     Text(
                         text = when (assignment.role) {
                             Role.NORMAL -> assignment.word ?: ""
-                            Role.UNDERCOVER -> "Undercover!" // Abstract undercover mechanic
+                            Role.UNDERCOVER -> assignment.word ?: ""
                             Role.MR_WHITE -> "Mr. White!"
                         },
                         fontSize = 32.sp,
