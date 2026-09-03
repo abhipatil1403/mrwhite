@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -93,7 +94,7 @@ fun ResultScreen(
                     )
                 }
 
-                Divider(color = GreyOutline, thickness = 2.dp)
+                HorizontalDivider(color = GreyOutline, thickness = 2.dp)
 
                 // Civilian word
                 Box(

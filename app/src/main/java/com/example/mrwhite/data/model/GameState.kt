@@ -12,10 +12,10 @@ data class GameState(
     val civilianWord: String? = null,
     val undercoverWord: String? = null,
     val discussionOrder: List<String> = emptyList(),
-    val clueCompletedPlayers: Set<String> = emptySet(),
     val eliminatedPlayers: Set<String> = emptySet(),
     val winner: String? = null,
-    val currentPhase: GamePhase = GamePhase.ROLE_REVEAL
+    val currentPhase: GamePhase = GamePhase.ROLE_REVEAL,
+    val hasEliminatedThisRound: Boolean = false
 )
 
 enum class GamePhase {

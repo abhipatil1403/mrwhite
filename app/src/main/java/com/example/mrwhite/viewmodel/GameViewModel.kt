@@ -168,18 +168,28 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun markClueCompleted(playerId: String) {
-        _gameState.update { state ->
-            if (state == null) return@update null
-            state.copy(clueCompletedPlayers = state.clueCompletedPlayers + playerId)
-        }
-    }
+
 
     fun eliminatePlayer(playerId: String) {
         _gameState.update { state ->
             if (state == null) return@update null
-            val updatedState = state.copy(eliminatedPlayers = state.eliminatedPlayers + playerId)
+            val updatedState = state.copy(
+                eliminatedPlayers = state.eliminatedPlayers + playerId,
+                hasEliminatedThisRound = true
+            )
             gameEngine.evaluateGameState(updatedState)
+        }
+    }
+
+    fun startNextDiscussionRound() {
+        _gameState.update { state ->
+            if (state == null) return@update null
+            val activePlayers = state.assignments.filter { !state.eliminatedPlayers.contains(it.player.id) }
+            val newOrder = activePlayers.map { it.player.id }.shuffled()
+            state.copy(
+                discussionOrder = newOrder,
+                hasEliminatedThisRound = false
+            )
         }
     }
 

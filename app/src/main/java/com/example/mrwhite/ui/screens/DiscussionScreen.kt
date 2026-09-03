@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -45,9 +44,6 @@ fun DiscussionScreen(
         }
     }
 
-    val activePlayers = state.assignments.filter { !state.eliminatedPlayers.contains(it.player.id) }
-    val allCluesGiven = state.clueCompletedPlayers.size >= activePlayers.size
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +66,7 @@ fun DiscussionScreen(
                 .padding(horizontal = 24.dp)
         ) {
             Text(
-                text = "Each player says a word related to their word one-by-one.\nAfter all players are done, discuss and vote out undercovers!",
+                text = "Discuss and vote out undercovers!",
                 fontSize = 16.sp,
                 color = BlackText,
                 textAlign = TextAlign.Center,
@@ -83,39 +79,59 @@ fun DiscussionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                items(state.discussionOrder, key = { it }) { playerId ->
+                // Active players in discussion order
+                val activeDiscussionOrder = state.discussionOrder.filter { !state.eliminatedPlayers.contains(it) }
+                items(activeDiscussionOrder, key = { it }) { playerId ->
                     val assignment = state.assignments.find { it.player.id == playerId } ?: return@items
-                    val isEliminated = state.eliminatedPlayers.contains(playerId)
-                    val isClueGiven = state.clueCompletedPlayers.contains(playerId)
                     val isSelected = selectedForElimination == playerId
 
                     DiscussionPlayerRow(
                         name = assignment.player.name,
                         role = assignment.role,
-                        isEliminated = isEliminated,
-                        isClueGiven = isClueGiven,
+                        isEliminated = false,
                         isSelected = isSelected,
                         onClick = {
-                            if (isEliminated) return@DiscussionPlayerRow
-                            
-                            if (!allCluesGiven) {
-                                viewModel.markClueCompleted(playerId)
-                            } else {
-                                selectedForElimination = if (selectedForElimination == playerId) null else playerId
-                            }
+                            selectedForElimination = if (selectedForElimination == playerId) null else playerId
                         }
                     )
+                }
+
+                // Eliminated players at the bottom
+                val eliminatedList = state.eliminatedPlayers.toList()
+                if (eliminatedList.isNotEmpty()) {
+                    items(eliminatedList, key = { it }) { playerId ->
+                        val assignment = state.assignments.find { it.player.id == playerId } ?: return@items
+                        
+                        DiscussionPlayerRow(
+                            name = assignment.player.name,
+                            role = assignment.role,
+                            isEliminated = true,
+                            isSelected = false,
+                            onClick = {}
+                        )
+                    }
                 }
             }
         }
 
         PaddingValues(24.dp).let { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                PrimaryButton(
-                    text = "▶ Eliminate",
-                    onClick = { showEliminationDialog = true },
-                    enabled = allCluesGiven && selectedForElimination != null
-                )
+                if (state.hasEliminatedThisRound) {
+                    PrimaryButton(
+                        text = "Another Discussion Round",
+                        onClick = { 
+                            viewModel.startNextDiscussionRound()
+                            selectedForElimination = null
+                        },
+                        enabled = true
+                    )
+                } else {
+                    PrimaryButton(
+                        text = "▶ Eliminate",
+                        onClick = { showEliminationDialog = true },
+                        enabled = selectedForElimination != null
+                    )
+                }
             }
         }
     }
@@ -139,7 +155,6 @@ fun DiscussionPlayerRow(
     name: String,
     role: Role,
     isEliminated: Boolean,
-    isClueGiven: Boolean,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -159,13 +174,6 @@ fun DiscussionPlayerRow(
                     Icon(
                         Icons.Filled.Warning,
                         contentDescription = "Selected",
-                        tint = BlackText,
-                        modifier = Modifier.padding(end = 8.dp).size(20.dp)
-                    )
-                } else if (isClueGiven && !isEliminated) {
-                    Icon(
-                        Icons.Filled.Check,
-                        contentDescription = "Done",
                         tint = BlackText,
                         modifier = Modifier.padding(end = 8.dp).size(20.dp)
                     )
@@ -193,6 +201,6 @@ fun DiscussionPlayerRow(
                 )
             }
         }
-        Divider(color = GreyOutline, modifier = Modifier.padding(top = 16.dp))
+        HorizontalDivider(color = GreyOutline, modifier = Modifier.padding(top = 16.dp))
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.mrwhite.theme.BlackText
 import com.example.mrwhite.theme.WhiteBackground
 import com.example.mrwhite.ui.components.TopBar
+import androidx.compose.ui.unit.dp
 
 private const val feedbackFormUrl = "https://forms.gle/iqYEs1tBcdchKxzL9"
 

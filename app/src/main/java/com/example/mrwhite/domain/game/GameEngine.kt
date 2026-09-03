@@ -65,8 +65,7 @@ class GameEngine(private val wordRepository: WordRepository) {
             else -> {
                 // Game continues, start next discussion round
                 state.copy(
-                    currentPhase = GamePhase.DISCUSSION,
-                    clueCompletedPlayers = emptySet()
+                    currentPhase = GamePhase.DISCUSSION
                 )
             }
         }

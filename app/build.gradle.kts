@@ -1,5 +1,6 @@
 plugins {
   alias(libs.plugins.android.application)
+  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.kotlin.serialization)
 }
@@ -61,6 +62,10 @@ dependencies {
   implementation(libs.androidx.compose.ui)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.material.icons.extended)
+  
+  // Serialization
+  implementation(libs.kotlinx.serialization.json)
   // Tooling
   debugImplementation(libs.androidx.compose.ui.tooling)
   // Instrumented tests
@@ -70,6 +75,10 @@ dependencies {
   // Local tests: jUnit, coroutines, Android runner
   testImplementation(libs.junit)
   testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.mockito.core)
+  testImplementation(libs.mockito.kotlin)
+  testImplementation(libs.robolectric)
+  testImplementation(libs.androidx.test.core)
 
   // Instrumented tests: jUnit rules and runners
   androidTestImplementation(libs.androidx.test.core)
@@ -78,8 +87,5 @@ dependencies {
   androidTestImplementation(libs.androidx.test.espresso.core)
 
   // Navigation
-  implementation(libs.androidx.navigation3.ui)
-  implementation(libs.androidx.navigation3.runtime)
-  implementation(libs.androidx.lifecycle.viewmodel.navigation3)
   implementation(libs.androidx.navigation.compose)
 }

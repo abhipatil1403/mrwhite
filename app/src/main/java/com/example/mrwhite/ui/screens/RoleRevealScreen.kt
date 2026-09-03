@@ -39,7 +39,7 @@ fun RoleRevealScreen(
 
     // Listen for phase change to navigate
     LaunchedEffect(state.currentPhase) {
-        if (state.currentPhase == com.example.mrwhite.data.model.GamePhase.GAME) {
+        if (state.currentPhase == com.example.mrwhite.data.model.GamePhase.DISCUSSION) {
             onGamePhaseStart()
         }
     }
@@ -150,7 +150,7 @@ fun PlayerRevealRow(
                 )
             }
         }
-        Divider(color = GreyOutline, modifier = Modifier.padding(top = 16.dp))
+        HorizontalDivider(color = GreyOutline, modifier = Modifier.padding(top = 16.dp))
     }
 }
 
