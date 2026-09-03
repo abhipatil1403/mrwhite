@@ -213,7 +213,7 @@ fun SecretRevealDialog(
                 )
 
                 Surface(
-                    color = NavyPrimary,
+                    color = androidx.compose.ui.graphics.Color(0xFF92C5FC),
                     shape = androidx.compose.ui.graphics.RectangleShape,
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -225,7 +225,7 @@ fun SecretRevealDialog(
                         },
                         fontSize = 32.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = androidx.compose.ui.graphics.Color.White,
+                        color = BlackText,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
                     )
