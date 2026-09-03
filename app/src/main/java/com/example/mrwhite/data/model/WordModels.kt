@@ -35,6 +35,7 @@ enum class Difficulty {
 }
 
 data class WordPairData(
+    val id: String,
     val category: WordCategory,
     val civilianWord: String,
     val undercoverWord: String,
