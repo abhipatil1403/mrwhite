@@ -336,20 +336,22 @@ fun SetupScreen(
                     color = BlackText
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            playerToManage = null
-                            playerToDelete = player
-                        }
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                androidx.compose.material3.Button(
+                    onClick = {
+                        playerToManage = null
+                        playerToDelete = player
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ErrorRed,
+                        contentColor = WhiteBackground
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(16.dp)
                 ) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = ErrorRed)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = "Delete Player", color = ErrorRed, fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Delete Player", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(32.dp))
             }

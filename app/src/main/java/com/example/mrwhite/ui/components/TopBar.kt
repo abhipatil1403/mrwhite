@@ -136,7 +136,7 @@ fun ConfirmationDialog(
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(24.dp),
             color = WhiteBackground,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -154,12 +154,18 @@ fun ConfirmationDialog(
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("No", color = BlackText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
-                    TextButton(onClick = onConfirm) {
+                    Button(
+                        onClick = onConfirm,
+                        colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFF92C5FC)),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                    ) {
                         Text("Yes", color = BlackText, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
