@@ -185,7 +185,8 @@ fun SetupScreen(
                             focusedBorderColor = NavyPrimary,
                             focusedLabelColor = NavyPrimary,
                             unfocusedBorderColor = GreyOutline
-                        )
+                        ),
+                        shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     OutlinedButton(
@@ -222,7 +223,8 @@ fun SetupScreen(
                                 focusedBorderColor = NavyPrimary,
                                 focusedLabelColor = NavyPrimary,
                                 unfocusedBorderColor = GreyOutline
-                            )
+                            ),
+                            shape = RoundedCornerShape(12.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         OutlinedButton(
@@ -256,6 +258,7 @@ fun SetupScreen(
                     onDecrease = { viewModel.updateMrWhiteCount(settings.mrWhiteCount - 1) },
                     onIncrease = { viewModel.updateMrWhiteCount(settings.mrWhiteCount + 1) }
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             SectionCard(title = "Category", subtitle = "Only categories with live word packs are shown.") {
