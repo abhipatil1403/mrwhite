@@ -11,6 +11,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,8 +36,11 @@ fun ResultScreen(
     onExit: () -> Unit
 ) {
     val gameState by viewModel.gameState.collectAsState()
-    val state = gameState ?: return
+    // Freeze the state when ResultScreen is first composed so it doesn't flash the next game's state during restart
+    val state = remember { gameState } ?: return
     val context = LocalContext.current
+
+    var actionHandled by remember { mutableStateOf(false) }
 
     val impostorsWon = state.winner == "Impostors"
     
@@ -49,10 +55,18 @@ fun ResultScreen(
         TopBar(
             title = "Result",
             showGameControls = true,
-            onRestartGame = onRestart,
+            onRestartGame = {
+                if (!actionHandled) {
+                    actionHandled = true
+                    onRestart()
+                }
+            },
             onExitGame = {
-                viewModel.exitGame()
-                onExit()
+                if (!actionHandled) {
+                    actionHandled = true
+                    viewModel.exitGame()
+                    onExit()
+                }
             }
         )
 
@@ -151,7 +165,14 @@ fun ResultScreen(
         ) {
             // Re-using TopBar's restart/exit functionality but from bottom buttons if needed,
             // or just text buttons as per spec
-            TextButton(onClick = onRestart) {
+            TextButton(
+                onClick = {
+                    if (!actionHandled) {
+                        actionHandled = true
+                        onRestart()
+                    }
+                }
+            ) {
                 Text(
                     text = "Restart",
                     fontSize = 18.sp,
@@ -161,8 +182,11 @@ fun ResultScreen(
             }
             TextButton(
                 onClick = {
-                    viewModel.exitGame()
-                    onExit()
+                    if (!actionHandled) {
+                        actionHandled = true
+                        viewModel.exitGame()
+                        onExit()
+                    }
                 }
             ) {
                 Text(
