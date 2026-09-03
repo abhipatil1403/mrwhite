@@ -5,7 +5,7 @@ import com.example.mrwhite.data.model.WordCategory
 import com.example.mrwhite.data.model.WordPairData
 
 object WordDatabase {
-    val supportedCategories = listOf(
+    val selectableCategories = listOf(
         WordCategory.ANY,
         WordCategory.FOOD,
         WordCategory.PLACES,
