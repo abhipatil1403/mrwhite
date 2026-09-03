@@ -104,7 +104,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateCategory(category: com.example.mrwhite.data.model.WordCategory) {
         val resolvedCategory =
-            if (category == com.example.mrwhite.data.model.WordCategory.ANY || category in WordDatabase.supportedCategories) {
+            if (category == com.example.mrwhite.data.model.WordCategory.ANY || category in WordDatabase.selectableCategories) {
                 category
             } else {
                 com.example.mrwhite.data.model.WordCategory.ANY
@@ -137,7 +137,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             true
         }.getOrElse {
             _gameStartError.value =
-                if (sanitizedSettings.category !in WordDatabase.supportedCategories &&
+                if (sanitizedSettings.category !in WordDatabase.selectableCategories &&
                     sanitizedSettings.category != com.example.mrwhite.data.model.WordCategory.ANY
                 ) {
                     "That category is not available yet. Choose one of the listed categories."
@@ -227,7 +227,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             settings.undercoverCount.coerceAtLeast(0).coerceAtMost(remainingSpecialSlots)
         val safeCategory =
             if (settings.category == com.example.mrwhite.data.model.WordCategory.ANY ||
-                settings.category in WordDatabase.supportedCategories
+                settings.category in WordDatabase.selectableCategories
             ) {
                 settings.category
             } else {
