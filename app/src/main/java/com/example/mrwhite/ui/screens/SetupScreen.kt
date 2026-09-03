@@ -3,6 +3,8 @@ package com.example.mrwhite.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -403,7 +405,7 @@ private fun SetupSummaryCard(
     }
 }
 
-@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlayerSelectionRow(
     player: Player,
@@ -415,7 +417,7 @@ private fun PlayerSelectionRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .androidx.compose.foundation.combinedClickable(
+            .combinedClickable(
                 onClick = onToggle,
                 onLongClick = onLongClick
             ),
