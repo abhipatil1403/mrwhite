@@ -50,9 +50,6 @@ fun TopBar(
                 IconButton(onClick = { showRestartDialog = true }) {
                     Icon(Icons.Filled.Refresh, contentDescription = "Restart", tint = BlackText)
                 }
-                IconButton(onClick = { showExitDialog = true }) {
-                    Icon(Icons.Filled.Close, contentDescription = "Exit", tint = BlackText)
-                }
             } else if (onBackClick != null) {
                 IconButton(onClick = onBackClick) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = BlackText)
@@ -71,12 +68,18 @@ fun TopBar(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
-        if (hasOverflowActions) {
-            IconButton(onClick = { showMenuDialog = true }) {
-                Icon(Icons.Filled.MoreVert, contentDescription = "Menu", tint = BlackText)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (showGameControls) {
+                IconButton(onClick = { showExitDialog = true }) {
+                    Icon(Icons.Filled.Close, contentDescription = "Exit", tint = BlackText)
+                }
+            } else if (hasOverflowActions) {
+                IconButton(onClick = { showMenuDialog = true }) {
+                    Icon(Icons.Filled.MoreVert, contentDescription = "Menu", tint = BlackText)
+                }
+            } else {
+                Spacer(modifier = Modifier.size(48.dp))
             }
-        } else {
-            Spacer(modifier = Modifier.size(48.dp))
         }
     }
 
