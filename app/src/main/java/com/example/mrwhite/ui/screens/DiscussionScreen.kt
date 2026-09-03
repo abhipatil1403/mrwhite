@@ -29,6 +29,7 @@ import com.example.mrwhite.viewmodel.GameViewModel
 @Composable
 fun DiscussionScreen(
     viewModel: GameViewModel,
+    onRestart: () -> Unit,
     onExit: () -> Unit,
     onResult: () -> Unit
 ) {
@@ -55,7 +56,7 @@ fun DiscussionScreen(
         TopBar(
             title = "Discussion",
             showGameControls = true,
-            onRestartGame = { viewModel.restartGame() },
+            onRestartGame = onRestart,
             onExitGame = {
                 viewModel.exitGame()
                 onExit()

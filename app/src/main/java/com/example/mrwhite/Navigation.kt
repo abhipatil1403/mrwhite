@@ -81,6 +81,11 @@ fun MainNavigation() {
         composable(Screen.Discussion.route) {
             DiscussionScreen(
                 viewModel = gameViewModel,
+                onRestart = {
+                    if (gameViewModel.restartGame()) {
+                        navController.popBackStack(Screen.RoleReveal.route, inclusive = false)
+                    }
+                },
                 onExit = {
                     navController.popBackStack(Screen.Setup.route, inclusive = false)
                 },
@@ -93,6 +98,11 @@ fun MainNavigation() {
         composable(Screen.Result.route) {
             ResultScreen(
                 viewModel = gameViewModel,
+                onRestart = {
+                    if (gameViewModel.restartGame()) {
+                        navController.popBackStack(Screen.RoleReveal.route, inclusive = false)
+                    }
+                },
                 onExit = {
                     navController.popBackStack(Screen.Setup.route, inclusive = false)
                 }

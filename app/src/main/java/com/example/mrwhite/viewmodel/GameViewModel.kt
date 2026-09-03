@@ -183,9 +183,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun restartGame() {
-        startGame()
-    }
+    fun restartGame(): Boolean = startGame()
 
     fun exitGame() {
         _gameState.value = null

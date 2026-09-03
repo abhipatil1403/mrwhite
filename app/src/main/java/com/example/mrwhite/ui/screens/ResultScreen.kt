@@ -28,6 +28,7 @@ import com.example.mrwhite.viewmodel.GameViewModel
 @Composable
 fun ResultScreen(
     viewModel: GameViewModel,
+    onRestart: () -> Unit,
     onExit: () -> Unit
 ) {
     val gameState by viewModel.gameState.collectAsState()
@@ -47,7 +48,7 @@ fun ResultScreen(
         TopBar(
             title = "Result",
             showGameControls = true,
-            onRestartGame = { viewModel.restartGame() },
+            onRestartGame = onRestart,
             onExitGame = {
                 viewModel.exitGame()
                 onExit()
@@ -149,7 +150,7 @@ fun ResultScreen(
         ) {
             // Re-using TopBar's restart/exit functionality but from bottom buttons if needed,
             // or just text buttons as per spec
-            TextButton(onClick = { viewModel.restartGame() }) {
+            TextButton(onClick = onRestart) {
                 Text(
                     text = "Restart",
                     fontSize = 18.sp,
