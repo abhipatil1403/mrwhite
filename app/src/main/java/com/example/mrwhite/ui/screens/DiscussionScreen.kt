@@ -80,59 +80,48 @@ fun DiscussionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                // Active players in discussion order
-                val activeDiscussionOrder = state.discussionOrder.filter { !state.eliminatedPlayers.contains(it) }
-                items(activeDiscussionOrder, key = { it }) { playerId ->
+                items(state.discussionOrder, key = { it }) { playerId ->
                     val assignment = state.assignments.find { it.player.id == playerId } ?: return@items
+                    val isEliminated = state.eliminatedPlayers.contains(playerId)
                     val isSelected = selectedForElimination == playerId
 
                     DiscussionPlayerRow(
                         name = assignment.player.name,
                         role = assignment.role,
-                        isEliminated = false,
+                        isEliminated = isEliminated,
                         isSelected = isSelected,
                         onClick = {
-                            selectedForElimination = if (selectedForElimination == playerId) null else playerId
+                            if (!isEliminated) {
+                                selectedForElimination = if (selectedForElimination == playerId) null else playerId
+                            }
                         }
                     )
-                }
-
-                // Eliminated players at the bottom
-                val eliminatedList = state.eliminatedPlayers.toList()
-                if (eliminatedList.isNotEmpty()) {
-                    items(eliminatedList, key = { it }) { playerId ->
-                        val assignment = state.assignments.find { it.player.id == playerId } ?: return@items
-                        
-                        DiscussionPlayerRow(
-                            name = assignment.player.name,
-                            role = assignment.role,
-                            isEliminated = true,
-                            isSelected = false,
-                            onClick = {}
-                        )
-                    }
                 }
             }
         }
 
         PaddingValues(24.dp).let { padding ->
-            Box(modifier = Modifier.padding(padding)) {
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 if (state.hasEliminatedThisRound) {
                     PrimaryButton(
                         text = "Another Discussion Round",
                         onClick = { 
                             viewModel.startNextDiscussionRound()
                             selectedForElimination = null
-                        },
-                        enabled = true
-                    )
-                } else {
-                    PrimaryButton(
-                        text = "▶ Eliminate",
-                        onClick = { showEliminationDialog = true },
-                        enabled = selectedForElimination != null
+                        }
                     )
                 }
+                
+                PrimaryButton(
+                    text = "▶ Eliminate",
+                    onClick = { showEliminationDialog = true },
+                    enabled = selectedForElimination != null
+                )
             }
         }
     }

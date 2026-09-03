@@ -184,8 +184,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun startNextDiscussionRound() {
         _gameState.update { state ->
             if (state == null) return@update null
-            val activePlayers = state.assignments.filter { !state.eliminatedPlayers.contains(it.player.id) }
-            val newOrder = activePlayers.map { it.player.id }.shuffled()
+            
+            val currentActive = state.discussionOrder.filter { !state.eliminatedPlayers.contains(it) }
+            val shuffledActive = currentActive.shuffled().toMutableList()
+            
+            val newOrder = state.discussionOrder.map { playerId ->
+                if (state.eliminatedPlayers.contains(playerId)) {
+                    playerId 
+                } else {
+                    shuffledActive.removeAt(0) 
+                }
+            }
+
             state.copy(
                 discussionOrder = newOrder,
                 hasEliminatedThisRound = false
