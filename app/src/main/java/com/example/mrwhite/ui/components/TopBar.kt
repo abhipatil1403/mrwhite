@@ -212,7 +212,9 @@ private fun MenuDialogItem(text: String, onClick: () -> Unit) {
         color = BlackText,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp, horizontal = 4.dp)
     )
 }

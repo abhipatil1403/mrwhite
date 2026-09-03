@@ -26,6 +26,9 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
@@ -59,6 +62,7 @@ import com.example.mrwhite.ui.components.PrimaryButton
 import com.example.mrwhite.ui.components.TopBar
 import com.example.mrwhite.viewmodel.GameViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetupScreen(
     viewModel: GameViewModel,
@@ -71,6 +75,7 @@ fun SetupScreen(
     val playersList by viewModel.savedPlayers.collectAsState()
     val groupsList by viewModel.savedGroups.collectAsState()
     var playerToDelete by remember { mutableStateOf<Player?>(null) }
+    var playerToManage by remember { mutableStateOf<Player?>(null) }
 
     Column(
         modifier = Modifier
@@ -138,6 +143,7 @@ fun SetupScreen(
                             fontSize = 14.sp,
                             color = NavyPrimary,
                             modifier = Modifier
+                                .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
                                 .clickable { viewModel.toggleSelectAllPlayers() }
                                 .padding(4.dp)
                         )
@@ -159,7 +165,7 @@ fun SetupScreen(
                                 player = player,
                                 selected = player.id in settings.selectedPlayerIds,
                                 onToggle = { viewModel.togglePlayerSelection(player.id) },
-                                onDelete = { playerToDelete = player }
+                                onLongClick = { playerToManage = player }
                             )
                         }
                     }
@@ -313,6 +319,43 @@ fun SetupScreen(
         }
     }
 
+    playerToManage?.let { player ->
+        ModalBottomSheet(
+            onDismissRequest = { playerToManage = null },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+            ) {
+                Text(
+                    text = "Manage ${player.name}",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = BlackText
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable {
+                            playerToManage = null
+                            playerToDelete = player
+                        }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = ErrorRed)
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(text = "Delete Player", color = ErrorRed, fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+    }
+
     playerToDelete?.let { player ->
         com.example.mrwhite.ui.components.ConfirmationDialog(
             text = "Are you sure you want to delete ${player.name}?",
@@ -357,16 +400,22 @@ private fun SetupSummaryCard(
     }
 }
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 private fun PlayerSelectionRow(
     player: Player,
     selected: Boolean,
     onToggle: () -> Unit,
-    onDelete: () -> Unit
+    onLongClick: () -> Unit
 ) {
     Surface(
-        onClick = onToggle,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .androidx.compose.foundation.combinedClickable(
+                onClick = onToggle,
+                onLongClick = onLongClick
+            ),
         shape = RoundedCornerShape(14.dp),
         color = if (selected) NavyPrimary.copy(alpha = 0.08f) else WhiteBackground,
         tonalElevation = if (selected) 2.dp else 0.dp,
@@ -394,17 +443,6 @@ private fun PlayerSelectionRow(
                     fontSize = 13.sp,
                     color = if (selected) NavyPrimary else BlackText.copy(alpha = 0.55f)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier.height(24.dp).width(24.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete Player",
-                        tint = ErrorRed
-                    )
-                }
             }
         }
     }
