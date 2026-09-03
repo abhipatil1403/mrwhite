@@ -17,7 +17,7 @@ class GameEngineRandomizationTest {
     fun testRoleAssignmentIsRandomizedIndependently() {
         val mockRepo = mock(WordRepository::class.java)
         `when`(mockRepo.getRandomWordPair(WordCategory.ANY)).thenReturn(
-            WordPairData(WordCategory.ANY, "Civ", "Und")
+            WordPairData("id_any", WordCategory.ANY, "Civ", "Und")
         )
 
         val engine = GameEngine(mockRepo)

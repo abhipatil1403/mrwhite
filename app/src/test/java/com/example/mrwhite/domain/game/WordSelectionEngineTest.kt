@@ -17,10 +17,10 @@ class WordSelectionEngineTest {
     private lateinit var history: WordUsageHistory
     private lateinit var engine: WordSelectionEngine
     private val mockPairs = listOf(
-        WordPairData(WordCategory.ANIMALS, "Cat", "Dog"),
-        WordPairData(WordCategory.ANIMALS, "Bird", "Fish"),
-        WordPairData(WordCategory.FOOD, "Apple", "Banana"),
-        WordPairData(WordCategory.FOOD, "Pizza", "Burger")
+        WordPairData("id_1", WordCategory.ANIMALS, "Cat", "Dog"),
+        WordPairData("id_2", WordCategory.ANIMALS, "Bird", "Fish"),
+        WordPairData("id_3", WordCategory.FOOD, "Apple", "Banana"),
+        WordPairData("id_4", WordCategory.FOOD, "Pizza", "Burger")
     )
 
     @Before
