@@ -44,6 +44,12 @@ class WordSelectionEngineTest {
     }
 
     @Test
+    fun testUnsupportedCategoryFallsBackToAvailablePool() {
+        val pair = engine.selectWordPair(WordCategory.VEHICLES)
+        assertTrue(mockPairs.contains(pair))
+    }
+
+    @Test
     fun testHardCooldownPreventsImmediateReuse() {
         val firstPair = engine.selectWordPair(WordCategory.FOOD)
         // Only 2 pairs in FOOD, so the second call must return the other one

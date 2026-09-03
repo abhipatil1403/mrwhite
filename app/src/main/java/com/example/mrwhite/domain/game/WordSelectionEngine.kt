@@ -18,11 +18,12 @@ class WordSelectionEngine(
         difficulty: com.example.mrwhite.data.model.Difficulty? = null
     ): WordPairData {
         // Step 1: Filter by category and difficulty
-        val basePool = if (category == WordCategory.ANY) {
+        val categoryPool = if (category == WordCategory.ANY) {
             allPairs
         } else {
             allPairs.filter { it.category == category }
         }
+        val basePool = if (categoryPool.isEmpty()) allPairs else categoryPool
         
         val candidatePool = if (difficulty != null) {
             val difficultyPool = basePool.filter { it.difficulty == difficulty }
@@ -30,9 +31,8 @@ class WordSelectionEngine(
         } else {
             basePool
         }
-
         if (candidatePool.isEmpty()) {
-            throw IllegalStateException("No words available for category $category")
+            throw IllegalStateException("No words available in the current word database")
         }
 
         val currentRound = history.globalRoundNumber

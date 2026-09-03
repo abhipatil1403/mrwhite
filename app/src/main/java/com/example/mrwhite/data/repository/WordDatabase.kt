@@ -156,4 +156,12 @@ object WordDatabase {
         WordPairData(WordCategory.NATURE, "Wind", "Breeze"),
         WordPairData(WordCategory.NATURE, "Night", "Day")
     )
+
+    val supportedCategories: Set<WordCategory> = allPairs.mapTo(linkedSetOf()) { it.category }
+
+    val selectableCategories: List<WordCategory> =
+        buildList {
+            add(WordCategory.ANY)
+            addAll(WordCategory.entries.filter { it in supportedCategories })
+        }
 }

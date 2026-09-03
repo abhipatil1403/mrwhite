@@ -2,9 +2,9 @@ package com.example.mrwhite.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
@@ -29,11 +29,14 @@ fun TopBar(
     onHowToPlayClick: (() -> Unit)? = null,
     onAboutClick: (() -> Unit)? = null,
     onFeedbackClick: (() -> Unit)? = null,
+    onShareClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var showMenuDialog by remember { mutableStateOf(false) }
     var showRestartDialog by remember { mutableStateOf(false) }
     var showExitDialog by remember { mutableStateOf(false) }
+    val hasOverflowActions =
+        onHowToPlayClick != null || onAboutClick != null || onFeedbackClick != null || onShareClick != null
 
     Row(
         modifier = modifier
@@ -52,7 +55,7 @@ fun TopBar(
                 }
             } else if (onBackClick != null) {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = BlackText)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = BlackText)
                 }
             } else {
                 Spacer(modifier = Modifier.size(48.dp))
@@ -68,12 +71,16 @@ fun TopBar(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
 
-        IconButton(onClick = { showMenuDialog = true }) {
-            Icon(Icons.Filled.MoreVert, contentDescription = "Menu", tint = BlackText)
+        if (hasOverflowActions) {
+            IconButton(onClick = { showMenuDialog = true }) {
+                Icon(Icons.Filled.MoreVert, contentDescription = "Menu", tint = BlackText)
+            }
+        } else {
+            Spacer(modifier = Modifier.size(48.dp))
         }
     }
 
-    if (showMenuDialog) {
+    if (showMenuDialog && hasOverflowActions) {
         MenuDialog(
             onDismiss = { showMenuDialog = false },
             onHowToPlayClick = {
@@ -87,6 +94,10 @@ fun TopBar(
             onFeedbackClick = {
                 showMenuDialog = false
                 onFeedbackClick?.invoke()
+            },
+            onShareClick = {
+                showMenuDialog = false
+                onShareClick?.invoke()
             }
         )
     }
@@ -159,10 +170,9 @@ fun MenuDialog(
     onDismiss: () -> Unit,
     onHowToPlayClick: (() -> Unit)? = null,
     onAboutClick: (() -> Unit)? = null,
-    onFeedbackClick: (() -> Unit)? = null
+    onFeedbackClick: (() -> Unit)? = null,
+    onShareClick: (() -> Unit)? = null
 ) {
-    var showCustomWordsDialog by remember { mutableStateOf(false) }
-
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(16.dp),
@@ -173,55 +183,17 @@ fun MenuDialog(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                MenuDialogItem("How to play?") { onHowToPlayClick?.invoke() ?: onDismiss() }
-                MenuDialogItem("Custom words") { showCustomWordsDialog = true }
-                MenuDialogItem("About the game") { onAboutClick?.invoke() ?: onDismiss() }
-                MenuDialogItem("Share with friends") { onDismiss() }
-                MenuDialogItem("Send feedback") { onFeedbackClick?.invoke() ?: onDismiss() }
-            }
-        }
-    }
-
-    if (showCustomWordsDialog) {
-        CustomWordsDialog(onDismiss = { showCustomWordsDialog = false })
-    }
-}
-
-@Composable
-fun CustomWordsDialog(onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = WhiteBackground,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "Custom words",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = BlackText
-                )
-                
-                // Placeholder for Custom Words input
-                Text(
-                    text = "Custom words functionality will be implemented soon.",
-                    color = BlackText
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel", color = BlackText)
-                    }
-                    TextButton(onClick = onDismiss, enabled = false) {
-                        Text("Start", color = BlackText)
-                    }
+                if (onHowToPlayClick != null) {
+                    MenuDialogItem("How to play?") { onHowToPlayClick() }
+                }
+                if (onAboutClick != null) {
+                    MenuDialogItem("About the game") { onAboutClick() }
+                }
+                if (onShareClick != null) {
+                    MenuDialogItem("Share with friends") { onShareClick() }
+                }
+                if (onFeedbackClick != null) {
+                    MenuDialogItem("Send feedback") { onFeedbackClick() }
                 }
             }
         }

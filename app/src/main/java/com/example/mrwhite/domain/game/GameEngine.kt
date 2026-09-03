@@ -6,6 +6,14 @@ import com.example.mrwhite.data.repository.WordRepository
 class GameEngine(private val wordRepository: WordRepository) {
 
     fun createGame(settings: GameSettings, players: List<Player>): GameState {
+        val totalPlayers = players.size
+        require(totalPlayers >= 3) { "At least 3 active players are required to start a game." }
+        require(settings.undercoverCount >= 0) { "Undercover count cannot be negative." }
+        require(settings.mrWhiteCount >= 0) { "Mr White count cannot be negative." }
+        require(settings.undercoverCount + settings.mrWhiteCount in 1 until totalPlayers) {
+            "Special roles must be fewer than the number of players."
+        }
+
         val wordPair = wordRepository.getRandomWordPair(settings.category, settings.difficulty)
         val normalWord = wordPair.civilianWord
         val undercoverWord = wordPair.undercoverWord
@@ -13,7 +21,7 @@ class GameEngine(private val wordRepository: WordRepository) {
         val roles = mutableListOf<Role>()
         repeat(settings.undercoverCount) { roles.add(Role.UNDERCOVER) }
         repeat(settings.mrWhiteCount) { roles.add(Role.MR_WHITE) }
-        repeat(settings.totalPlayers - settings.undercoverCount - settings.mrWhiteCount) { roles.add(Role.NORMAL) }
+        repeat(totalPlayers - settings.undercoverCount - settings.mrWhiteCount) { roles.add(Role.NORMAL) }
 
         // Shuffle both roles and players independently
         roles.shuffle()

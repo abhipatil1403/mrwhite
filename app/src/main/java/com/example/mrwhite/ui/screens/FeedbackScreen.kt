@@ -26,6 +26,13 @@ fun FeedbackScreen(onBack: () -> Unit) {
     var isLoading by remember { mutableStateOf(true) }
     var hasError by remember { mutableStateOf(false) }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            webView?.destroy()
+            webView = null
+        }
+    }
+
     // Intercept back presses to handle WebView history
     BackHandler {
         if (webView?.canGoBack() == true) {
@@ -85,16 +92,7 @@ fun FeedbackScreen(onBack: () -> Unit) {
                                     isLoading = false
                                 }
 
-                                override fun receivedError(
-                                    view: WebView?,
-                                    errorCode: Int,
-                                    description: String?,
-                                    failingUrl: String?
-                                ) {
-                                    super.receivedError(view, errorCode, description, failingUrl)
-                                    isLoading = false
-                                    hasError = true
-                                }
+
 
                                 override fun onReceivedError(
                                     view: WebView?,

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.example.mrwhite.data.model.GameSettings
 import com.example.mrwhite.data.model.Player
+import com.example.mrwhite.data.repository.WordDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +14,8 @@ import com.example.mrwhite.data.repository.WordRepository
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _settings = MutableStateFlow(GameSettings())
     val settings: StateFlow<GameSettings> = _settings.asStateFlow()
+    private val _gameStartError = MutableStateFlow<String?>(null)
+    val gameStartError: StateFlow<String?> = _gameStartError.asStateFlow()
 
     private val playerRepository = com.example.mrwhite.data.repository.PlayerRepository(application)
     
@@ -31,9 +34,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         
         val newPlayer = Player(name = trimmed)
         _savedPlayers.value = playerRepository.addPlayer(newPlayer)
-        
-        // Auto-select the new player
-        togglePlayerSelection(newPlayer.id)
+
+        _settings.update { current ->
+            sanitizeSettings(current.copy(selectedPlayerIds = current.selectedPlayerIds + newPlayer.id))
+        }
+        clearGameStartError()
     }
 
     fun togglePlayerSelection(playerId: String) {
@@ -43,29 +48,35 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             } else {
                 current.selectedPlayerIds + playerId
             }
-            current.copy(selectedPlayerIds = newIds)
+            sanitizeSettings(current.copy(selectedPlayerIds = newIds))
         }
+        clearGameStartError()
     }
 
     fun toggleSelectAllPlayers() {
         _settings.update { current ->
             val allIds = _savedPlayers.value.map { it.id }.toSet()
             if (current.selectedPlayerIds.size == allIds.size && allIds.isNotEmpty()) {
-                current.copy(selectedPlayerIds = emptySet())
+                sanitizeSettings(current.copy(selectedPlayerIds = emptySet()))
             } else {
-                current.copy(selectedPlayerIds = allIds)
+                sanitizeSettings(current.copy(selectedPlayerIds = allIds))
             }
         }
+        clearGameStartError()
     }
 
     fun updateUndercoverCount(count: Int) {
-        if (count >= 0) {
-            _settings.update { it.copy(undercoverCount = count) }
+        _settings.update { current ->
+            sanitizeSettings(current.copy(undercoverCount = count.coerceAtLeast(0)))
         }
+        clearGameStartError()
     }
 
     fun updateMrWhiteCount(count: Int) {
-        _settings.value = _settings.value.copy(mrWhiteCount = count)
+        _settings.update { current ->
+            sanitizeSettings(current.copy(mrWhiteCount = count.coerceAtLeast(0)))
+        }
+        clearGameStartError()
     }
 
     private val groupRepository = com.example.mrwhite.data.repository.GroupRepository(application)
@@ -80,7 +91,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadGroup(group: com.example.mrwhite.data.model.SavedGroup) {
-        _settings.update { it.copy(selectedPlayerIds = group.playerIds) }
+        val availableIds = _savedPlayers.value.map { it.id }.toSet()
+        _settings.update { current ->
+            sanitizeSettings(current.copy(selectedPlayerIds = group.playerIds.intersect(availableIds)))
+        }
+        clearGameStartError()
     }
 
     fun deleteGroup(groupId: String) {
@@ -88,7 +103,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun updateCategory(category: com.example.mrwhite.data.model.WordCategory) {
-        _settings.value = _settings.value.copy(category = category)
+        val resolvedCategory =
+            if (category == com.example.mrwhite.data.model.WordCategory.ANY || category in WordDatabase.supportedCategories) {
+                category
+            } else {
+                com.example.mrwhite.data.model.WordCategory.ANY
+            }
+        _settings.value = _settings.value.copy(category = resolvedCategory)
+        clearGameStartError()
     }
 
     private val wordRepository = WordRepository(application)
@@ -96,10 +118,33 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _gameState = MutableStateFlow<com.example.mrwhite.data.model.GameState?>(null)
     val gameState: StateFlow<com.example.mrwhite.data.model.GameState?> = _gameState.asStateFlow()
 
-    fun startGame() {
-        if (settings.value.isValid) {
-            val selectedPlayers = savedPlayers.value.filter { settings.value.selectedPlayerIds.contains(it.id) }
-            _gameState.value = gameEngine.createGame(settings.value, selectedPlayers)
+    fun startGame(): Boolean {
+        val sanitizedSettings = sanitizeSettings(settings.value)
+        if (sanitizedSettings != settings.value) {
+            _settings.value = sanitizedSettings
+        }
+
+        val selectedPlayers = selectedPlayersFor(sanitizedSettings)
+        if (!sanitizedSettings.isValid || selectedPlayers.size < 3) {
+            _gameStartError.value =
+                sanitizedSettings.validationMessage ?: "Select at least 3 players to start the game."
+            return false
+        }
+
+        return runCatching {
+            _gameState.value = gameEngine.createGame(sanitizedSettings, selectedPlayers)
+            _gameStartError.value = null
+            true
+        }.getOrElse {
+            _gameStartError.value =
+                if (sanitizedSettings.category !in WordDatabase.supportedCategories &&
+                    sanitizedSettings.category != com.example.mrwhite.data.model.WordCategory.ANY
+                ) {
+                    "That category is not available yet. Choose one of the listed categories."
+                } else {
+                    "Could not start the game. Please try again."
+                }
+            false
         }
     }
 
@@ -139,13 +184,43 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun restartGame() {
-        if (settings.value.isValid) {
-            val selectedPlayers = savedPlayers.value.filter { settings.value.selectedPlayerIds.contains(it.id) }
-            _gameState.value = gameEngine.createGame(settings.value, selectedPlayers)
-        }
+        startGame()
     }
 
     fun exitGame() {
         _gameState.value = null
+        _gameStartError.value = null
+    }
+
+    fun clearGameStartError() {
+        _gameStartError.value = null
+    }
+
+    private fun selectedPlayersFor(settings: GameSettings): List<Player> =
+        savedPlayers.value.filter { it.id in settings.selectedPlayerIds }
+
+    private fun sanitizeSettings(settings: GameSettings): GameSettings {
+        val availableIds = _savedPlayers.value.map { it.id }.toSet()
+        val selectedIds = settings.selectedPlayerIds.intersect(availableIds)
+        val maxSpecialRoles = (selectedIds.size - 1).coerceAtLeast(0)
+        val safeMrWhiteCount = settings.mrWhiteCount.coerceAtLeast(0).coerceAtMost(maxSpecialRoles)
+        val remainingSpecialSlots = (maxSpecialRoles - safeMrWhiteCount).coerceAtLeast(0)
+        val safeUndercoverCount =
+            settings.undercoverCount.coerceAtLeast(0).coerceAtMost(remainingSpecialSlots)
+        val safeCategory =
+            if (settings.category == com.example.mrwhite.data.model.WordCategory.ANY ||
+                settings.category in WordDatabase.supportedCategories
+            ) {
+                settings.category
+            } else {
+                com.example.mrwhite.data.model.WordCategory.ANY
+            }
+
+        return settings.copy(
+            selectedPlayerIds = selectedIds,
+            undercoverCount = safeUndercoverCount,
+            mrWhiteCount = safeMrWhiteCount,
+            category = safeCategory
+        )
     }
 }

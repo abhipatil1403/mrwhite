@@ -59,8 +59,9 @@ fun MainNavigation() {
                 viewModel = gameViewModel,
                 onBack = { navController.popBackStack() },
                 onStart = {
-                    gameViewModel.startGame()
-                    navController.navigate(Screen.RoleReveal.route)
+                    if (gameViewModel.startGame()) {
+                        navController.navigate(Screen.RoleReveal.route)
+                    }
                 }
             )
         }
