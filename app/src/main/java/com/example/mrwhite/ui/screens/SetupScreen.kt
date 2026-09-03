@@ -168,6 +168,13 @@ fun SetupScreen(
                         placeholder = { Text("Enter player name") },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Send),
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                            onSend = {
+                                viewModel.addPlayer(newPlayerName)
+                                newPlayerName = ""
+                            }
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = NavyPrimary,
                             focusedLabelColor = NavyPrimary,
@@ -198,6 +205,13 @@ fun SetupScreen(
                             placeholder = { Text("Save this group as...") },
                             modifier = Modifier.weight(1f),
                             singleLine = true,
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Send),
+                            keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                                onSend = {
+                                    viewModel.createGroup(newGroupName)
+                                    newGroupName = ""
+                                }
+                            ),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = NavyPrimary,
                                 focusedLabelColor = NavyPrimary,
