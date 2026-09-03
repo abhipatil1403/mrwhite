@@ -23,6 +23,7 @@ import com.example.mrwhite.theme.BlackText
 import com.example.mrwhite.theme.GreyOutline
 import com.example.mrwhite.theme.WhiteBackground
 import com.example.mrwhite.ui.components.PrimaryButton
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.mrwhite.ui.components.TopBar
 import com.example.mrwhite.ui.components.ConfirmationDialog
 import com.example.mrwhite.viewmodel.GameViewModel
@@ -142,7 +143,11 @@ fun PlayerRevealRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
             .padding(vertical = 16.dp)
     ) {
         Row(

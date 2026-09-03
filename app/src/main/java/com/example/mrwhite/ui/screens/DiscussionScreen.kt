@@ -21,6 +21,7 @@ import com.example.mrwhite.theme.BlackText
 import com.example.mrwhite.theme.GreyOutline
 import com.example.mrwhite.theme.WhiteBackground
 import com.example.mrwhite.ui.components.ConfirmationDialog
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.mrwhite.ui.components.PrimaryButton
 import com.example.mrwhite.ui.components.TopBar
 import com.example.mrwhite.viewmodel.GameViewModel
@@ -161,7 +162,12 @@ fun DiscussionPlayerRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = !isEliminated, onClick = onClick)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                enabled = !isEliminated,
+                onClick = onClick
+            )
             .padding(vertical = 16.dp)
     ) {
         Row(
