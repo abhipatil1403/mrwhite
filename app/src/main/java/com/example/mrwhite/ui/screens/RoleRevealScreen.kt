@@ -22,6 +22,7 @@ import com.example.mrwhite.data.model.Role
 import com.example.mrwhite.theme.BlackText
 import com.example.mrwhite.theme.GreyOutline
 import com.example.mrwhite.theme.WhiteBackground
+import com.example.mrwhite.theme.NavyPrimary
 import com.example.mrwhite.ui.components.PrimaryButton
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.mrwhite.ui.components.TopBar
@@ -209,17 +210,24 @@ fun SecretRevealDialog(
                     color = BlackText
                 )
 
-                Text(
-                    text = when (assignment.role) {
-                        Role.NORMAL -> assignment.word ?: ""
-                        Role.UNDERCOVER -> "Undercover!" // Abstract undercover mechanic
-                        Role.MR_WHITE -> "Mr. White!"
-                    },
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = BlackText,
-                    textAlign = TextAlign.Center
-                )
+                Surface(
+                    color = NavyPrimary,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = when (assignment.role) {
+                            Role.NORMAL -> assignment.word ?: ""
+                            Role.UNDERCOVER -> "Undercover!" // Abstract undercover mechanic
+                            Role.MR_WHITE -> "Mr. White!"
+                        },
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = androidx.compose.ui.graphics.Color.White,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                    )
+                }
 
                 PrimaryButton(
                     text = "OK",
