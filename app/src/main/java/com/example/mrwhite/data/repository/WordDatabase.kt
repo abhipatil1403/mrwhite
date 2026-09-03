@@ -24,7 +24,7 @@ object WordDatabase {
         WordCategory.TECHNOLOGY
     )
 
-    val words = listOf(
+    val allPairs = listOf(
         WordPairData("WP_001", WordCategory.FOOD, "Samosa", "Kachori", setOf("snack", "indian"), Difficulty.EASY),
         WordPairData("WP_002", WordCategory.FOOD, "Dosa", "Idli", setOf("south-indian", "breakfast"), Difficulty.EASY),
         WordPairData("WP_003", WordCategory.FOOD, "Chai", "Coffee", setOf("beverage", "drink"), Difficulty.EASY),
