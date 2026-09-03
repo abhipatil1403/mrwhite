@@ -24,6 +24,7 @@ import com.example.mrwhite.theme.GreyOutline
 import com.example.mrwhite.theme.WhiteBackground
 import com.example.mrwhite.ui.components.PrimaryButton
 import com.example.mrwhite.ui.components.TopBar
+import com.example.mrwhite.ui.components.ConfirmationDialog
 import com.example.mrwhite.viewmodel.GameViewModel
 
 @Composable
@@ -36,6 +37,7 @@ fun RoleRevealScreen(
     val state = gameState ?: return
 
     var selectedAssignment by remember { mutableStateOf<PlayerAssignment?>(null) }
+    var assignmentToConfirmReReveal by remember { mutableStateOf<PlayerAssignment?>(null) }
 
     // Listen for phase change to navigate
     LaunchedEffect(state.currentPhase) {
@@ -89,6 +91,8 @@ fun RoleRevealScreen(
                         onClick = {
                             if (!isRevealed) {
                                 selectedAssignment = assignment
+                            } else {
+                                assignmentToConfirmReReveal = assignment
                             }
                         }
                     )
@@ -116,6 +120,17 @@ fun RoleRevealScreen(
             }
         )
     }
+
+    assignmentToConfirmReReveal?.let { assignment ->
+        ConfirmationDialog(
+            text = "Are you sure you want to reveal\n${assignment.player.name}'s role again?",
+            onConfirm = {
+                assignmentToConfirmReReveal = null
+                selectedAssignment = assignment
+            },
+            onDismiss = { assignmentToConfirmReReveal = null }
+        )
+    }
 }
 
 @Composable
@@ -127,7 +142,7 @@ fun PlayerRevealRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = !isRevealed, onClick = onClick)
+            .clickable(onClick = onClick)
             .padding(vertical = 16.dp)
     ) {
         Row(
